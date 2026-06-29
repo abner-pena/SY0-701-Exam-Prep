@@ -4,6 +4,7 @@ import { questions } from "../data/questions";
 export default function HomeScreen({ onStartQuiz, onStudy, domains, theme, onToggleTheme }) {
   const [domain, setDomain] = useState("all");
   const [count, setCount] = useState(20);
+  const [inputVal, setInputVal] = useState("20");
 
   const domainList = Object.values(domains);
   const poolSize =
@@ -16,7 +17,31 @@ export default function HomeScreen({ onStartQuiz, onStudy, domains, theme, onTog
     domainCounts[d] = questions.filter((q) => q.domain === d).length;
   }
 
-  const counts = [...new Set([10, 15, 20, poolSize])].filter((n) => n <= poolSize);
+  const presets = [...new Set([10, 25, 50, poolSize])].filter((n) => n <= poolSize);
+  const isPreset = presets.includes(count);
+
+  function handlePreset(n) {
+    setCount(n);
+    setInputVal(String(n));
+  }
+
+  function handleInput(e) {
+    const raw = e.target.value;
+    setInputVal(raw);
+    const n = parseInt(raw, 10);
+    if (!isNaN(n) && n >= 1 && n <= poolSize) setCount(n);
+  }
+
+  function handleInputBlur() {
+    const n = parseInt(inputVal, 10);
+    if (isNaN(n) || n < 1) {
+      setCount(1);
+      setInputVal("1");
+    } else if (n > poolSize) {
+      setCount(poolSize);
+      setInputVal(String(poolSize));
+    }
+  }
 
   return (
     <div className="screen home-screen">
@@ -54,7 +79,7 @@ export default function HomeScreen({ onStartQuiz, onStudy, domains, theme, onTog
         <select
           className="select"
           value={domain}
-          onChange={(e) => setDomain(e.target.value)}
+          onChange={(e) => { setDomain(e.target.value); setCount(20); setInputVal("20"); }}
         >
           <option value="all">All Domains ({questions.length} questions)</option>
           {domainList.map((d) => (
@@ -66,19 +91,32 @@ export default function HomeScreen({ onStartQuiz, onStudy, domains, theme, onTog
 
         <label className="field-label">Number of Questions</label>
         <div className="count-row">
-          {counts.map((n) => (
+          {presets.map((n) => (
             <button
               key={n}
-              className={`count-btn ${count === n ? "active" : ""}`}
-              onClick={() => setCount(n)}
+              className={`count-btn ${isPreset && count === n ? "active" : ""}`}
+              onClick={() => handlePreset(n)}
             >
-              {n === poolSize && n !== 10 && n !== 15 && n !== 20 ? "All" : n}
+              {n === poolSize && n !== 10 && n !== 25 && n !== 50 ? "All" : n}
             </button>
           ))}
         </div>
+        <div className="custom-count-row">
+          <span className="custom-count-label">Custom:</span>
+          <input
+            className={`custom-count-input${!isPreset ? " active" : ""}`}
+            type="number"
+            min={1}
+            max={poolSize}
+            value={inputVal}
+            onChange={handleInput}
+            onBlur={handleInputBlur}
+          />
+          <span className="custom-count-max">/ {poolSize}</span>
+        </div>
 
         <button className="btn-primary" onClick={() => onStartQuiz({ domain, count })}>
-          Start Quiz →
+          Start Quiz ({count}) →
         </button>
       </div>
 
