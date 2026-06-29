@@ -10,7 +10,6 @@ export default function QuizScreen({ questions, onFinish, onBack }) {
   const q = questions[current];
   const progress = ((current + 1) / questions.length) * 100;
   const isLast = current === questions.length - 1;
-  const answered = Object.keys(answers).length;
 
   function handleSelect(idx) {
     if (revealed) return;
@@ -40,10 +39,11 @@ export default function QuizScreen({ questions, onFinish, onBack }) {
   }
 
   function optionClass(idx) {
-    if (!revealed) return selected === idx ? "option selected" : "option";
-    if (idx === q.answer) return "option correct";
-    if (idx === selected && selected !== q.answer) return "option wrong";
-    return "option";
+    const base = "option";
+    if (!revealed) return selected === idx ? `${base} option-selected` : base;
+    if (idx === q.answer) return `${base} option-correct`;
+    if (idx === selected && selected !== q.answer) return `${base} option-wrong`;
+    return base;
   }
 
   return (
@@ -61,58 +61,54 @@ export default function QuizScreen({ questions, onFinish, onBack }) {
       )}
 
       <div className="quiz-header">
-        <button className="icon-btn" onClick={() => setShowConfirm(true)} aria-label="Exit quiz">✕</button>
-        <div className="quiz-counter">
-          {current + 1} / {questions.length}
+        <button className="icon-btn" onClick={() => setShowConfirm(true)} aria-label="Exit">✕</button>
+        <div className="progress-bar">
+          <div className="progress-fill" style={{ width: `${progress}%` }} />
         </div>
-        <div className="score-badge">{answered} answered</div>
+        <span className="quiz-counter">{current + 1}/{questions.length}</span>
       </div>
 
-      <div className="progress-bar">
-        <div className="progress-fill" style={{ width: `${progress}%` }} />
-      </div>
-
-      <div className="domain-tag">{q.domain}</div>
-
-      <div className="question-card">
+      <div className="question-block">
+        <div className="question-label">QUESTION: {current + 1}</div>
         <p className="question-text">{q.question}</p>
-
-        <div className="options">
-          {q.options.map((opt, idx) => (
-            <button
-              key={idx}
-              className={optionClass(idx)}
-              onClick={() => handleSelect(idx)}
-            >
-              <span className="option-letter">
-                {String.fromCharCode(65 + idx)}
-              </span>
-              <span className="option-text">{opt}</span>
-              {revealed && idx === q.answer && (
-                <span className="option-icon">✓</span>
-              )}
-              {revealed && idx === selected && selected !== q.answer && (
-                <span className="option-icon">✗</span>
-              )}
-            </button>
-          ))}
-        </div>
-
-        {revealed && (
-          <div className="explanation">
-            <div className="explanation-label">Explanation</div>
-            <p>{q.explanation}</p>
-          </div>
-        )}
       </div>
+
+      <div className="options">
+        {q.options.map((opt, idx) => (
+          <button
+            key={idx}
+            className={optionClass(idx)}
+            onClick={() => handleSelect(idx)}
+          >
+            <span className={`opt-circle ${
+              revealed && idx === q.answer ? "circle-correct" :
+              revealed && idx === selected && selected !== q.answer ? "circle-wrong" :
+              selected === idx && !revealed ? "circle-selected" : ""
+            }`}>
+              {String.fromCharCode(65 + idx)}
+            </span>
+            <span className="opt-text">{opt}</span>
+          </button>
+        ))}
+      </div>
+
+      {revealed && (
+        <div className="answer-section">
+          <div className="answer-line">
+            <span className="answer-label">Answer(s):</span>
+            <span className="answer-value">{String.fromCharCode(65 + q.answer)}</span>
+          </div>
+          <div className="explanation-box">
+            <div className="explanation-title">Explanation:</div>
+            <p className="explanation-text">{q.explanation}</p>
+          </div>
+        </div>
+      )}
 
       <div className="quiz-footer">
-        {!revealed && (
-          <button className="btn-ghost" onClick={handleSkip}>
-            Skip →
-          </button>
-        )}
-        {revealed && (
+        {!revealed ? (
+          <button className="btn-ghost" onClick={handleSkip}>Skip →</button>
+        ) : (
           <button className="btn-primary" onClick={handleNext}>
             {isLast ? "View Results" : "Next Question →"}
           </button>

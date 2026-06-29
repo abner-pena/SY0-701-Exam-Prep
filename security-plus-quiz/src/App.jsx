@@ -20,6 +20,10 @@ export default function App() {
   const [quizQuestions, setQuizQuestions] = useState([]);
   const [answers, setAnswers] = useState({});
   const [selectedDomain, setSelectedDomain] = useState("all");
+  const [theme, setTheme] = useState("dark");
+
+  const toggleTheme = useCallback(() =>
+    setTheme((t) => (t === "dark" ? "light" : "dark")), []);
 
   const startQuiz = useCallback(({ domain = "all", count = 20 } = {}) => {
     const pool =
@@ -43,9 +47,15 @@ export default function App() {
   const goStudy = useCallback(() => setScreen("study"), []);
 
   return (
-    <div className="app">
+    <div className={`app theme-${theme}`}>
       {screen === "home" && (
-        <HomeScreen onStartQuiz={startQuiz} onStudy={goStudy} domains={DOMAINS} />
+        <HomeScreen
+          onStartQuiz={startQuiz}
+          onStudy={goStudy}
+          domains={DOMAINS}
+          theme={theme}
+          onToggleTheme={toggleTheme}
+        />
       )}
       {screen === "quiz" && (
         <QuizScreen

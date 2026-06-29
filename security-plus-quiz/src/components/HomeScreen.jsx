@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { questions } from "../data/questions";
 
-export default function HomeScreen({ onStartQuiz, onStudy, domains }) {
+export default function HomeScreen({ onStartQuiz, onStudy, domains, theme, onToggleTheme }) {
   const [domain, setDomain] = useState("all");
   const [count, setCount] = useState(20);
 
@@ -16,10 +16,18 @@ export default function HomeScreen({ onStartQuiz, onStudy, domains }) {
     domainCounts[d] = questions.filter((q) => q.domain === d).length;
   }
 
+  const counts = [...new Set([10, 15, 20, poolSize])].filter((n) => n <= poolSize);
+
   return (
     <div className="screen home-screen">
-      <div className="home-header">
+      <div className="home-topbar">
         <div className="badge">SY0-701</div>
+        <button className="theme-toggle" onClick={onToggleTheme} title="Toggle theme">
+          {theme === "dark" ? "☀️" : "🌙"}
+        </button>
+      </div>
+
+      <div className="home-header">
         <h1 className="title">Security+</h1>
         <p className="subtitle">CompTIA Exam Prep</p>
       </div>
@@ -58,7 +66,7 @@ export default function HomeScreen({ onStartQuiz, onStudy, domains }) {
 
         <label className="field-label">Number of Questions</label>
         <div className="count-row">
-          {[10, 15, 20, poolSize].filter((v, i, a) => a.indexOf(v) === i && v <= poolSize).map((n) => (
+          {counts.map((n) => (
             <button
               key={n}
               className={`count-btn ${count === n ? "active" : ""}`}
@@ -69,10 +77,7 @@ export default function HomeScreen({ onStartQuiz, onStudy, domains }) {
           ))}
         </div>
 
-        <button
-          className="btn-primary"
-          onClick={() => onStartQuiz({ domain, count })}
-        >
+        <button className="btn-primary" onClick={() => onStartQuiz({ domain, count })}>
           Start Quiz →
         </button>
       </div>
