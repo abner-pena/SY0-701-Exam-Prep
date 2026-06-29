@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import HomeScreen from "./components/HomeScreen";
 import QuizScreen from "./components/QuizScreen";
 import ResultsScreen from "./components/ResultsScreen";
@@ -21,6 +21,10 @@ export default function App() {
   const [answers, setAnswers] = useState({});
   const [selectedDomain, setSelectedDomain] = useState("all");
   const [theme, setTheme] = useState("dark");
+
+  useEffect(() => {
+    document.documentElement.setAttribute("data-theme", theme);
+  }, [theme]);
 
   const toggleTheme = useCallback(() =>
     setTheme((t) => (t === "dark" ? "light" : "dark")), []);
@@ -47,7 +51,7 @@ export default function App() {
   const goStudy = useCallback(() => setScreen("study"), []);
 
   return (
-    <div className={`app theme-${theme}`}>
+    <div className="app">
       {screen === "home" && (
         <HomeScreen
           onStartQuiz={startQuiz}
@@ -58,11 +62,7 @@ export default function App() {
         />
       )}
       {screen === "quiz" && (
-        <QuizScreen
-          questions={quizQuestions}
-          onFinish={finishQuiz}
-          onBack={goHome}
-        />
+        <QuizScreen questions={quizQuestions} onFinish={finishQuiz} onBack={goHome} />
       )}
       {screen === "results" && (
         <ResultsScreen
@@ -74,11 +74,7 @@ export default function App() {
         />
       )}
       {screen === "review" && (
-        <ReviewScreen
-          questions={quizQuestions}
-          answers={answers}
-          onBack={() => setScreen("results")}
-        />
+        <ReviewScreen questions={quizQuestions} answers={answers} onBack={() => setScreen("results")} />
       )}
       {screen === "study" && (
         <StudyScreen questions={questions} domains={DOMAINS} onBack={goHome} />
