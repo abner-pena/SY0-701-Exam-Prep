@@ -1,11 +1,12 @@
 import { useState } from "react";
 
-export default function QuizScreen({ questions, onFinish, onBack }) {
+export default function QuizScreen({ questions, onFinish, onBack, cycleReset }) {
   const [current, setCurrent] = useState(0);
   const [selected, setSelected] = useState(null);
   const [revealed, setRevealed] = useState(false);
   const [answers, setAnswers] = useState({});
   const [showConfirm, setShowConfirm] = useState(false);
+  const [showCycleNote, setShowCycleNote] = useState(cycleReset);
 
   const q = questions[current];
   const progress = ((current + 1) / questions.length) * 100;
@@ -60,6 +61,16 @@ export default function QuizScreen({ questions, onFinish, onBack }) {
         </div>
       )}
 
+      {showCycleNote && (
+        <div className="modal-overlay">
+          <div className="modal">
+            <p className="cycle-reset-title">Cycle Complete!</p>
+            <p className="cycle-reset-body">You've seen all the questions in this pool. Starting a fresh cycle — questions will shuffle in a new random order.</p>
+            <button className="btn-primary" onClick={() => setShowCycleNote(false)}>Got it →</button>
+          </div>
+        </div>
+      )}
+
       <div className="quiz-header">
         <button className="icon-btn" onClick={() => setShowConfirm(true)} aria-label="Exit">✕</button>
         <div className="progress-bar">
@@ -99,8 +110,22 @@ export default function QuizScreen({ questions, onFinish, onBack }) {
             <span className="answer-value">{String.fromCharCode(65 + q.answer)}</span>
           </div>
           <div className="explanation-box">
-            <div className="explanation-title">Explanation:</div>
-            <p className="explanation-text">{q.explanation}</p>
+            {q.optionExplanations ? (
+              q.optionExplanations.map((expl, idx) => (
+                <div
+                  key={idx}
+                  className={`opt-expl ${idx === q.answer ? "opt-expl-correct" : "opt-expl-wrong"}`}
+                >
+                  <span className="opt-expl-letter">{String.fromCharCode(65 + idx)}.</span>
+                  <span className="opt-expl-text">{expl}</span>
+                </div>
+              ))
+            ) : (
+              <>
+                <div className="explanation-title">Explanation:</div>
+                <p className="explanation-text">{q.explanation}</p>
+              </>
+            )}
           </div>
         </div>
       )}

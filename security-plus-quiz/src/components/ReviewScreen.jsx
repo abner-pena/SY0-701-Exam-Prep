@@ -63,11 +63,11 @@ export default function ReviewScreen({ questions, answers, onBack }) {
                 <div className="review-body">
                   <div className="review-options">
                     {q.options.map((opt, idx) => {
-                      let cls = "ro";
-                      if (idx === q.answer) cls += " ro-correct";
-                      if (idx === userAnswer && userAnswer !== q.answer) cls += " ro-wrong";
+                      let ocls = "ro";
+                      if (idx === q.answer) ocls += " ro-correct";
+                      if (idx === userAnswer && userAnswer !== q.answer) ocls += " ro-wrong";
                       return (
-                        <div key={idx} className={cls}>
+                        <div key={idx} className={ocls}>
                           <span className="ro-letter">{String.fromCharCode(65 + idx)}</span>
                           <span>{opt}</span>
                           {idx === q.answer && <span className="ro-icon">✓</span>}
@@ -76,9 +76,25 @@ export default function ReviewScreen({ questions, answers, onBack }) {
                       );
                     })}
                   </div>
-                  <div className="review-explanation">
-                    <strong>Explanation:</strong> {q.explanation}
-                  </div>
+
+                  {q.optionExplanations ? (
+                    <div className="review-opt-expls">
+                      {q.optionExplanations.map((expl, idx) => (
+                        <div
+                          key={idx}
+                          className={`opt-expl ${idx === q.answer ? "opt-expl-correct" : "opt-expl-wrong"}`}
+                        >
+                          <span className="opt-expl-letter">{String.fromCharCode(65 + idx)}.</span>
+                          <span className="opt-expl-text">{expl}</span>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="review-explanation">
+                      <strong>Explanation:</strong> {q.explanation}
+                    </div>
+                  )}
+
                   <div className="review-domain-tag">{q.domain}</div>
                 </div>
               )}

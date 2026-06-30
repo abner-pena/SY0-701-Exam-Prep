@@ -1,10 +1,8 @@
 import { useState } from "react";
 import { questions } from "../data/questions";
 
-export default function HomeScreen({ onStartQuiz, onStudy, domains, theme, onToggleTheme }) {
+export default function HomeScreen({ onStartQuiz, onStudy, domains, theme, onToggleTheme, seenCount, totalCount, onResetProgress }) {
   const [domain, setDomain] = useState("all");
-  const [count, setCount] = useState(20);
-  const [inputVal, setInputVal] = useState("20");
 
   const domainList = Object.values(domains);
   const poolSize =
@@ -17,31 +15,7 @@ export default function HomeScreen({ onStartQuiz, onStudy, domains, theme, onTog
     domainCounts[d] = questions.filter((q) => q.domain === d).length;
   }
 
-  const presets = [...new Set([10, 25, 50, poolSize])].filter((n) => n <= poolSize);
-  const isPreset = presets.includes(count);
-
-  function handlePreset(n) {
-    setCount(n);
-    setInputVal(String(n));
-  }
-
-  function handleInput(e) {
-    const raw = e.target.value;
-    setInputVal(raw);
-    const n = parseInt(raw, 10);
-    if (!isNaN(n) && n >= 1 && n <= poolSize) setCount(n);
-  }
-
-  function handleInputBlur() {
-    const n = parseInt(inputVal, 10);
-    if (isNaN(n) || n < 1) {
-      setCount(1);
-      setInputVal("1");
-    } else if (n > poolSize) {
-      setCount(poolSize);
-      setInputVal(String(poolSize));
-    }
-  }
+  const cycleProgress = Math.round((seenCount / totalCount) * 100);
 
   return (
     <div className="screen home-screen">
@@ -59,7 +33,7 @@ export default function HomeScreen({ onStartQuiz, onStudy, domains, theme, onTog
 
       <div className="stats-row">
         <div className="stat-card">
-          <span className="stat-num">{questions.length}</span>
+          <span className="stat-num">{totalCount}</span>
           <span className="stat-label">Questions</span>
         </div>
         <div className="stat-card">
@@ -68,7 +42,23 @@ export default function HomeScreen({ onStartQuiz, onStudy, domains, theme, onTog
         </div>
         <div className="stat-card">
           <span className="stat-num">90</span>
-          <span className="stat-label">Min Exam</span>
+          <span className="stat-label">Per Quiz</span>
+        </div>
+      </div>
+
+      <div className="progress-card card">
+        <div className="progress-card-header">
+          <span className="progress-card-title">Cycle Progress</span>
+          <span className="progress-card-count">{seenCount} / {totalCount}</span>
+        </div>
+        <div className="cycle-bar">
+          <div className="cycle-fill" style={{ width: `${cycleProgress}%` }} />
+        </div>
+        <div className="progress-card-footer">
+          <span className="progress-card-sub">{totalCount - seenCount} questions remaining this cycle</span>
+          {seenCount > 0 && (
+            <button className="reset-btn" onClick={onResetProgress}>Reset</button>
+          )}
         </div>
       </div>
 
@@ -79,7 +69,7 @@ export default function HomeScreen({ onStartQuiz, onStudy, domains, theme, onTog
         <select
           className="select"
           value={domain}
-          onChange={(e) => { setDomain(e.target.value); setCount(20); setInputVal("20"); }}
+          onChange={(e) => setDomain(e.target.value)}
         >
           <option value="all">All Domains ({questions.length} questions)</option>
           {domainList.map((d) => (
@@ -89,34 +79,12 @@ export default function HomeScreen({ onStartQuiz, onStudy, domains, theme, onTog
           ))}
         </select>
 
-        <label className="field-label">Number of Questions</label>
-        <div className="count-row">
-          {presets.map((n) => (
-            <button
-              key={n}
-              className={`count-btn ${isPreset && count === n ? "active" : ""}`}
-              onClick={() => handlePreset(n)}
-            >
-              {n === poolSize && n !== 10 && n !== 25 && n !== 50 ? "All" : n}
-            </button>
-          ))}
-        </div>
-        <div className="custom-count-row">
-          <span className="custom-count-label">Custom:</span>
-          <input
-            className={`custom-count-input${!isPreset ? " active" : ""}`}
-            type="number"
-            min={1}
-            max={poolSize}
-            value={inputVal}
-            onChange={handleInput}
-            onBlur={handleInputBlur}
-          />
-          <span className="custom-count-max">/ {poolSize}</span>
-        </div>
+        <p className="quiz-info-line">
+          90 random questions · shuffled · no repeats until cycle complete
+        </p>
 
-        <button className="btn-primary" onClick={() => onStartQuiz({ domain, count })}>
-          Start Quiz ({count}) →
+        <button className="btn-primary" onClick={() => onStartQuiz({ domain })}>
+          Start Quiz →
         </button>
       </div>
 
