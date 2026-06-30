@@ -269,62 +269,56 @@ body {
 .stat-num { font-size: 24px; font-weight: 800; color: var(--accent); }
 .stat-label { font-size: 11px; font-weight: 600; color: var(--text2); text-transform: uppercase; letter-spacing: 0.05em; }
 
-.count-row { display: flex; gap: 8px; margin-bottom: 10px; }
-.count-btn {
-  flex: 1;
-  background: var(--bg3);
-  color: var(--text2);
-  border: 1px solid var(--border);
-  border-radius: 9px;
-  padding: 11px 4px;
-  font-size: 14px;
+/* ─── Cycle Progress Card ────────────────────────────────────── */
+.progress-card { display: flex; flex-direction: column; gap: 10px; }
+.progress-card-header { display: flex; justify-content: space-between; align-items: center; }
+.progress-card-title { font-size: 14px; font-weight: 700; color: var(--text); }
+.progress-card-count { font-size: 14px; font-weight: 800; color: var(--accent); }
+.cycle-bar { height: 8px; background: var(--bg3); border-radius: 8px; overflow: hidden; }
+.cycle-fill { height: 100%; background: var(--accent); border-radius: 8px; transition: width 0.5s ease; }
+.progress-card-footer { display: flex; justify-content: space-between; align-items: center; }
+.progress-card-sub { font-size: 12px; color: var(--text3); }
+.reset-btn {
+  font-size: 12px;
   font-weight: 600;
+  color: var(--text3);
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 4px 12px;
   cursor: pointer;
   transition: all 0.15s;
 }
-.count-btn.active {
-  background: var(--accent-bg);
-  color: var(--accent);
-  border-color: var(--accent);
-}
+.reset-btn:hover { border-color: var(--red); color: var(--red); }
 
-.custom-count-row {
+.quiz-info-line { font-size: 13px; color: var(--text3); margin: 4px 0 16px; line-height: 1.5; }
+
+/* ─── Per-Option Explanations ────────────────────────────────── */
+.opt-expl {
   display: flex;
-  align-items: center;
   gap: 8px;
-  margin-bottom: 16px;
-}
-.custom-count-label {
+  padding: 8px 0;
+  border-bottom: 1px solid var(--expl-border);
   font-size: 13px;
-  color: var(--text2);
-  white-space: nowrap;
+  line-height: 1.55;
 }
-.custom-count-input {
-  width: 72px;
-  background: var(--bg3);
-  color: var(--text);
-  border: 1px solid var(--border);
-  border-radius: 9px;
-  padding: 9px 10px;
-  font-size: 14px;
-  font-weight: 600;
-  text-align: center;
-  outline: none;
-  transition: border-color 0.15s;
-  -moz-appearance: textfield;
+.opt-expl:last-child { border-bottom: none; padding-bottom: 0; }
+.opt-expl:first-child { padding-top: 0; }
+.opt-expl-letter {
+  font-weight: 800;
+  flex-shrink: 0;
+  width: 18px;
 }
-.custom-count-input::-webkit-outer-spin-button,
-.custom-count-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
-.custom-count-input:focus,
-.custom-count-input.active {
-  border-color: var(--accent);
-  background: var(--accent-bg);
-  color: var(--accent);
-}
-.custom-count-max {
-  font-size: 13px;
-  color: var(--text3);
-}
+.opt-expl-correct .opt-expl-letter { color: var(--green); }
+.opt-expl-wrong .opt-expl-letter { color: var(--red); }
+.opt-expl-correct .opt-expl-text { color: var(--text); }
+.opt-expl-wrong .opt-expl-text { color: var(--text2); }
+
+.review-opt-expls { display: flex; flex-direction: column; }
+
+/* ─── Cycle Reset Modal ──────────────────────────────────────── */
+.cycle-reset-title { font-size: 20px; font-weight: 800; color: var(--accent); margin-bottom: 8px !important; }
+.cycle-reset-body { font-size: 14px; line-height: 1.6; color: var(--text2); }
 
 .domain-list { display: flex; flex-direction: column; gap: 13px; }
 .domain-item { display: flex; align-items: flex-start; gap: 10px; }
