@@ -38,6 +38,7 @@ export default function App() {
   const [theme, setTheme] = useState("dark");
   const [seenIds, setSeenIds] = useState(loadSeen);
   const [cycleReset, setCycleReset] = useState(false);
+  const [timedMode, setTimedMode] = useState(false);
 
   useEffect(() => {
     document.documentElement.setAttribute("data-theme", theme);
@@ -46,7 +47,7 @@ export default function App() {
   const toggleTheme = useCallback(() =>
     setTheme((t) => (t === "dark" ? "light" : "dark")), []);
 
-  const startQuiz = useCallback(({ domain = "all" } = {}) => {
+  const startQuiz = useCallback(({ domain = "all", timed = false } = {}) => {
     const pool =
       domain === "all"
         ? questions
@@ -71,6 +72,7 @@ export default function App() {
     setAnswers({});
     setSelectedDomain(domain);
     setCycleReset(didReset);
+    setTimedMode(timed);
     setScreen("quiz");
   }, []);
 
@@ -112,13 +114,14 @@ export default function App() {
           onFinish={finishQuiz}
           onBack={goHome}
           cycleReset={cycleReset}
+          timed={timedMode}
         />
       )}
       {screen === "results" && (
         <ResultsScreen
           questions={quizQuestions}
           answers={answers}
-          onRetry={() => startQuiz({ domain: selectedDomain })}
+          onRetry={() => startQuiz({ domain: selectedDomain, timed: timedMode })}
           onHome={goHome}
           onReview={goReview}
           seenCount={seenIds.size}

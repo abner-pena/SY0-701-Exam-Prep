@@ -3,6 +3,7 @@ import { questions } from "../data/questions";
 
 export default function HomeScreen({ onStartQuiz, onStudy, domains, theme, onToggleTheme, seenCount, totalCount, onResetProgress }) {
   const [domain, setDomain] = useState("all");
+  const [timed, setTimed] = useState(false);
 
   const domainList = Object.values(domains);
   const poolSize =
@@ -79,11 +80,23 @@ export default function HomeScreen({ onStartQuiz, onStudy, domains, theme, onTog
           ))}
         </select>
 
+        <div className="toggle-row">
+          <div className="toggle-info">
+            <span className="toggle-label">Timed Mode</span>
+            <span className="toggle-sub">90 min · like the real exam</span>
+          </div>
+          <button
+            className={`toggle-switch ${timed ? "on" : ""}`}
+            onClick={() => setTimed((t) => !t)}
+            aria-label="Toggle timed mode"
+          />
+        </div>
+
         <p className="quiz-info-line">
           90 random questions · shuffled · no repeats until cycle complete
         </p>
 
-        <button className="btn-primary" onClick={() => onStartQuiz({ domain })}>
+        <button className="btn-primary" onClick={() => onStartQuiz({ domain, timed })}>
           Start Quiz →
         </button>
       </div>
@@ -92,14 +105,14 @@ export default function HomeScreen({ onStartQuiz, onStudy, domains, theme, onTog
         <h2 className="section-title">Exam Domains</h2>
         <div className="domain-list">
           {[
-            { name: domains.GENERAL_SECURITY, pct: "12%", color: "#6366f1" },
-            { name: domains.THREATS, pct: "22%", color: "#ef4444" },
-            { name: domains.ARCHITECTURE, pct: "18%", color: "#f59e0b" },
-            { name: domains.OPERATIONS, pct: "28%", color: "#10b981" },
-            { name: domains.PROGRAM_MANAGEMENT, pct: "20%", color: "#3b82f6" },
-          ].map(({ name, pct, color }) => (
+            { name: domains.GENERAL_SECURITY, pct: "12%" },
+            { name: domains.THREATS, pct: "22%" },
+            { name: domains.ARCHITECTURE, pct: "18%" },
+            { name: domains.OPERATIONS, pct: "28%" },
+            { name: domains.PROGRAM_MANAGEMENT, pct: "20%" },
+          ].map(({ name, pct }) => (
             <div key={name} className="domain-item">
-              <div className="domain-dot" style={{ background: color }} />
+              <div className="domain-dot" />
               <div className="domain-info">
                 <span className="domain-name">{name}</span>
                 <span className="domain-pct">{pct} of exam</span>
