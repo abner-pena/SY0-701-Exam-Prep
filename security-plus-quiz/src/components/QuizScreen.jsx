@@ -1,16 +1,46 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 
-export default function QuizScreen({ questions, onFinish, onBack, cycleReset }) {
+const TOTAL_SECONDS = 90 * 60;
+
+function formatTime(s) {
+  const m = Math.floor(s / 60).toString().padStart(2, "0");
+  const sec = (s % 60).toString().padStart(2, "0");
+  return `${m}:${sec}`;
+}
+
+export default function QuizScreen({ questions, onFinish, onBack, cycleReset, timed }) {
   const [current, setCurrent] = useState(0);
   const [selected, setSelected] = useState(null);
   const [revealed, setRevealed] = useState(false);
   const [answers, setAnswers] = useState({});
   const [showConfirm, setShowConfirm] = useState(false);
   const [showCycleNote, setShowCycleNote] = useState(cycleReset);
+  const [timeLeft, setTimeLeft] = useState(TOTAL_SECONDS);
+
+  const latestAnswers = useRef({});
+  const finished = useRef(false);
+
+  useEffect(() => { latestAnswers.current = answers; }, [answers]);
+
+  useEffect(() => {
+    if (!timed) return;
+    const interval = setInterval(() => {
+      setTimeLeft((prev) => Math.max(0, prev - 1));
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [timed]);
+
+  useEffect(() => {
+    if (timed && timeLeft === 0 && !finished.current) {
+      finished.current = true;
+      onFinish(latestAnswers.current);
+    }
+  }, [timed, timeLeft, onFinish]);
 
   const q = questions[current];
   const progress = ((current + 1) / questions.length) * 100;
   const isLast = current === questions.length - 1;
+  const timerWarning = timed && timeLeft <= 300;
 
   function handleSelect(idx) {
     if (revealed) return;
@@ -20,7 +50,9 @@ export default function QuizScreen({ questions, onFinish, onBack, cycleReset }) 
   }
 
   function handleNext() {
+    if (finished.current) return;
     if (isLast) {
+      finished.current = true;
       onFinish(answers);
     } else {
       setCurrent((c) => c + 1);
@@ -30,7 +62,9 @@ export default function QuizScreen({ questions, onFinish, onBack, cycleReset }) 
   }
 
   function handleSkip() {
+    if (finished.current) return;
     if (isLast) {
+      finished.current = true;
       onFinish(answers);
     } else {
       setCurrent((c) => c + 1);
@@ -77,6 +111,11 @@ export default function QuizScreen({ questions, onFinish, onBack, cycleReset }) 
           <div className="progress-fill" style={{ width: `${progress}%` }} />
         </div>
         <span className="quiz-counter">{current + 1}/{questions.length}</span>
+        {timed && (
+          <span className={`quiz-timer${timerWarning ? " warning" : ""}`}>
+            {formatTime(timeLeft)}
+          </span>
+        )}
       </div>
 
       <div className="question-block">
