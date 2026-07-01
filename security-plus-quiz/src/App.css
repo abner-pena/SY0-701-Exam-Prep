@@ -58,6 +58,7 @@
 html, body {
   background: var(--bg);
   color: var(--text);
+  min-height: 100vh;
   min-height: 100dvh;
   transition: background 0.2s, color 0.2s;
 }
@@ -69,12 +70,13 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-#root { min-height: 100dvh; display: flex; flex-direction: column; background: var(--bg); }
+#root { min-height: 100vh; min-height: 100dvh; display: flex; flex-direction: column; background: var(--bg); }
 
 .app {
   max-width: 680px;
   margin: 0 auto;
   width: 100%;
+  min-height: 100vh;
   min-height: 100dvh;
   display: flex;
   flex-direction: column;
@@ -900,9 +902,10 @@ body {
 @media (min-width: 640px) {
   #root { background: var(--bg3); }
   .app {
-    max-width: 760px;
+    max-width: 840px;
     box-shadow: 0 0 0 1px var(--border);
     background: var(--bg);
+    min-height: 100vh;
     min-height: 100dvh;
   }
   .screen { padding: 28px 36px 52px; gap: 20px; }
@@ -917,9 +920,9 @@ body {
   }
 }
 
-/* Large desktop: full breathing room */
+/* Large desktop */
 @media (min-width: 1024px) {
-  .app { max-width: 920px; }
+  .app { max-width: 1160px; }
   .screen { padding: 36px 52px 64px; gap: 24px; }
   .quiz-screen { padding: 28px 52px 52px; }
   .card { padding: 28px 32px; }
@@ -927,4 +930,13 @@ body {
   .stat-num { font-size: 30px; }
   .title { font-size: 60px; }
   .question-text { font-size: 19px; }
+}
+
+/* Wide desktop (1440px+) */
+@media (min-width: 1440px) {
+  .app { max-width: 1380px; }
+  .screen { padding: 40px 64px 72px; }
+  .quiz-screen { padding: 32px 64px 56px; }
+  .title { font-size: 68px; }
+  .stats-row { grid-template-columns: repeat(3, minmax(0, 220px)); }
 }
