@@ -30,6 +30,8 @@ export default function StudyScreen({ questions, domains, onBack }) {
 
   if (!card) return null;
 
+  const isPBQ = !!(card.type && card.type !== "mcq");
+
   return (
     <div className="screen study-screen">
       <div className="screen-header">
@@ -62,15 +64,24 @@ export default function StudyScreen({ questions, domains, onBack }) {
       >
         <div className="flashcard-inner">
           <div className="flashcard-front">
-            <div className="fc-domain-tag">{card.domain}</div>
+            <div className="fc-domain-tag">
+              {card.domain}
+              {isPBQ && <span className="pbq-tag" style={{ marginLeft: 6 }}>PBQ</span>}
+            </div>
             <p className="fc-question">{card.question}</p>
             <div className="fc-hint">Tap to reveal answer</div>
           </div>
           <div className="flashcard-back">
-            <div className="fc-answer-label">Correct Answer</div>
-            <p className="fc-answer">{card.options[card.answer]}</p>
-            <div className="fc-divider" />
-            <p className="fc-explanation">{card.explanation}</p>
+            {isPBQ ? (
+              <PBQFlashcardBack card={card} />
+            ) : (
+              <>
+                <div className="fc-answer-label">Correct Answer</div>
+                <p className="fc-answer">{card.options[card.answer]}</p>
+                <div className="fc-divider" />
+                <p className="fc-explanation">{card.explanation}</p>
+              </>
+            )}
           </div>
         </div>
       </div>
@@ -80,17 +91,68 @@ export default function StudyScreen({ questions, domains, onBack }) {
         <button className="btn-primary study-nav-btn" onClick={next}>Next →</button>
       </div>
 
-      <div className="study-options-grid">
-        {card.options.map((opt, idx) => (
-          <div
-            key={idx}
-            className={`study-option ${idx === card.answer && flipped ? "correct" : ""}`}
-          >
-            <span className="study-opt-letter">{String.fromCharCode(65 + idx)}</span>
-            <span>{opt}</span>
-          </div>
-        ))}
-      </div>
+      {!isPBQ && (
+        <div className="study-options-grid">
+          {card.options.map((opt, idx) => (
+            <div
+              key={idx}
+              className={`study-option ${idx === card.answer && flipped ? "correct" : ""}`}
+            >
+              <span className="study-opt-letter">{String.fromCharCode(65 + idx)}</span>
+              <span>{opt}</span>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
+}
+
+function PBQFlashcardBack({ card }) {
+  if (card.type === "matching") {
+    return (
+      <>
+        <div className="fc-answer-label">Correct Matches</div>
+        {card.pairs.map((p, i) => (
+          <div key={p.term} className="fc-pbq-row">
+            <span className="fc-pbq-letter">{String.fromCharCode(65 + i)}</span>
+            <span className="fc-pbq-term">{p.term}</span>
+            <span className="fc-pbq-arrow">→</span>
+            <span className="fc-pbq-match">{p.match}</span>
+          </div>
+        ))}
+        <div className="fc-divider" />
+        <p className="fc-explanation">{card.explanation}</p>
+      </>
+    );
+  }
+
+  if (card.type === "ordering") {
+    return (
+      <>
+        <div className="fc-answer-label">Correct Order</div>
+        {card.items.map((item, i) => (
+          <div key={item} className="fc-pbq-row">
+            <span className="fc-pbq-letter">{i + 1}</span>
+            <span>{item}</span>
+          </div>
+        ))}
+        <div className="fc-divider" />
+        <p className="fc-explanation">{card.explanation}</p>
+      </>
+    );
+  }
+
+  if (card.type === "fillin") {
+    return (
+      <>
+        <div className="fc-answer-label">Answer</div>
+        <p className="fc-answer">{card.answer}</p>
+        <div className="fc-divider" />
+        <p className="fc-explanation">{card.explanation}</p>
+      </>
+    );
+  }
+
+  return null;
 }
