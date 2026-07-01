@@ -1,4 +1,5 @@
 import { DOMAINS } from "../data/questions";
+import { isCorrect } from "../utils/scoring";
 
 const PASS_SCORE = 750;
 const MIN_SCORE = 100;
@@ -10,7 +11,7 @@ function scaledScore(correct, total) {
 
 export default function ResultsScreen({ questions, answers, onRetry, onHome, onReview }) {
   const total = questions.length;
-  const correct = questions.filter((q) => answers[q.id] === q.answer).length;
+  const correct = questions.filter((q) => isCorrect(q, answers[q.id])).length;
   const skipped = total - Object.keys(answers).length;
   const score = scaledScore(correct, total);
   const passed = score >= PASS_SCORE;
@@ -19,7 +20,7 @@ export default function ResultsScreen({ questions, answers, onRetry, onHome, onR
   const domainResults = Object.values(DOMAINS).map((domain) => {
     const dqs = questions.filter((q) => q.domain === domain);
     if (dqs.length === 0) return null;
-    const dCorrect = dqs.filter((q) => answers[q.id] === q.answer).length;
+    const dCorrect = dqs.filter((q) => isCorrect(q, answers[q.id])).length;
     const pct = Math.round((dCorrect / dqs.length) * 100);
     return { domain, correct: dCorrect, total: dqs.length, pct };
   }).filter(Boolean);

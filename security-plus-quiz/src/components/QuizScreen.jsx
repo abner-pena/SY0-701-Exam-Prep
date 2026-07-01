@@ -1,4 +1,7 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
+import MatchingQuestion from "./pbq/MatchingQuestion";
+import OrderingQuestion from "./pbq/OrderingQuestion";
+import FillInQuestion from "./pbq/FillInQuestion";
 
 const TOTAL_SECONDS = 90 * 60;
 
@@ -13,6 +16,7 @@ export default function QuizScreen({ questions, onFinish, onBack, cycleReset, ti
   const [selected, setSelected] = useState(null);
   const [revealed, setRevealed] = useState(false);
   const [answers, setAnswers] = useState({});
+  const [pbqAnswer, setPbqAnswer] = useState(null);
   const [showConfirm, setShowConfirm] = useState(false);
   const [showCycleNote, setShowCycleNote] = useState(cycleReset);
   const [timeLeft, setTimeLeft] = useState(TOTAL_SECONDS);
@@ -38,40 +42,43 @@ export default function QuizScreen({ questions, onFinish, onBack, cycleReset, ti
   }, [timed, timeLeft, onFinish]);
 
   const q = questions[current];
+  const isPBQ = !!(q.type && q.type !== "mcq");
   const progress = ((current + 1) / questions.length) * 100;
   const isLast = current === questions.length - 1;
   const timerWarning = timed && timeLeft <= 300;
 
   function handleSelect(idx) {
-    if (revealed) return;
+    if (revealed || isPBQ) return;
     setSelected(idx);
     setRevealed(true);
     setAnswers((prev) => ({ ...prev, [q.id]: idx }));
   }
 
-  function handleNext() {
+  const handlePBQAnswer = useCallback((answer) => {
+    setPbqAnswer(answer);
+  }, []);
+
+  function handlePBQSubmit() {
+    if (!pbqAnswer || finished.current) return;
+    setAnswers((prev) => ({ ...prev, [q.id]: pbqAnswer }));
+    setRevealed(true);
+  }
+
+  function advance() {
     if (finished.current) return;
     if (isLast) {
       finished.current = true;
-      onFinish(answers);
+      onFinish(latestAnswers.current);
     } else {
       setCurrent((c) => c + 1);
       setSelected(null);
       setRevealed(false);
+      setPbqAnswer(null);
     }
   }
 
-  function handleSkip() {
-    if (finished.current) return;
-    if (isLast) {
-      finished.current = true;
-      onFinish(answers);
-    } else {
-      setCurrent((c) => c + 1);
-      setSelected(null);
-      setRevealed(false);
-    }
-  }
+  function handleNext() { advance(); }
+  function handleSkip() { if (!finished.current) advance(); }
 
   function optionClass(idx) {
     const base = "option";
@@ -119,37 +126,71 @@ export default function QuizScreen({ questions, onFinish, onBack, cycleReset, ti
       </div>
 
       <div className="question-block">
-        <div className="question-label">QUESTION: {current + 1}</div>
+        <div className="question-label">
+          QUESTION: {current + 1}
+          {isPBQ && <span className="pbq-tag">PBQ</span>}
+        </div>
         <p className="question-text">{q.question}</p>
       </div>
 
-      <div className="options">
-        {q.options.map((opt, idx) => (
-          <button
-            key={idx}
-            className={optionClass(idx)}
-            onClick={() => handleSelect(idx)}
-          >
-            <span className={`opt-circle ${
-              revealed && idx === q.answer ? "circle-correct" :
-              revealed && idx === selected && selected !== q.answer ? "circle-wrong" :
-              selected === idx && !revealed ? "circle-selected" : ""
-            }`}>
-              {String.fromCharCode(65 + idx)}
-            </span>
-            <span className="opt-text">{opt}</span>
-          </button>
-        ))}
-      </div>
+      {isPBQ ? (
+        <>
+          {q.type === "matching" && (
+            <MatchingQuestion
+              question={q}
+              onAnswer={handlePBQAnswer}
+              revealed={revealed}
+              userAnswer={answers[q.id]}
+            />
+          )}
+          {q.type === "ordering" && (
+            <OrderingQuestion
+              question={q}
+              onAnswer={handlePBQAnswer}
+              revealed={revealed}
+              userAnswer={answers[q.id]}
+            />
+          )}
+          {q.type === "fillin" && (
+            <FillInQuestion
+              question={q}
+              onAnswer={handlePBQAnswer}
+              revealed={revealed}
+              userAnswer={answers[q.id]}
+            />
+          )}
+        </>
+      ) : (
+        <div className="options">
+          {q.options.map((opt, idx) => (
+            <button
+              key={idx}
+              className={optionClass(idx)}
+              onClick={() => handleSelect(idx)}
+            >
+              <span className={`opt-circle ${
+                revealed && idx === q.answer ? "circle-correct" :
+                revealed && idx === selected && selected !== q.answer ? "circle-wrong" :
+                selected === idx && !revealed ? "circle-selected" : ""
+              }`}>
+                {String.fromCharCode(65 + idx)}
+              </span>
+              <span className="opt-text">{opt}</span>
+            </button>
+          ))}
+        </div>
+      )}
 
       {revealed && (
         <div className="answer-section">
-          <div className="answer-line">
-            <span className="answer-label">Answer(s):</span>
-            <span className="answer-value">{String.fromCharCode(65 + q.answer)}</span>
-          </div>
+          {!isPBQ && (
+            <div className="answer-line">
+              <span className="answer-label">Answer(s):</span>
+              <span className="answer-value">{String.fromCharCode(65 + q.answer)}</span>
+            </div>
+          )}
           <div className="explanation-box">
-            {q.optionExplanations ? (
+            {!isPBQ && q.optionExplanations ? (
               q.optionExplanations.map((expl, idx) => (
                 <div
                   key={idx}
@@ -170,12 +211,23 @@ export default function QuizScreen({ questions, onFinish, onBack, cycleReset, ti
       )}
 
       <div className="quiz-footer">
-        {!revealed ? (
-          <button className="btn-ghost" onClick={handleSkip}>Skip →</button>
-        ) : (
+        {revealed ? (
           <button className="btn-primary" onClick={handleNext}>
             {isLast ? "View Results" : "Next Question →"}
           </button>
+        ) : isPBQ ? (
+          <>
+            <button
+              className="btn-primary"
+              onClick={handlePBQSubmit}
+              disabled={!pbqAnswer}
+            >
+              Submit Answer
+            </button>
+            <button className="btn-ghost" onClick={handleSkip}>Skip →</button>
+          </>
+        ) : (
+          <button className="btn-ghost" onClick={handleSkip}>Skip →</button>
         )}
       </div>
     </div>

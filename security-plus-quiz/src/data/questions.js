@@ -913,4 +913,125 @@ export const questions = [
   {id:898,domain:A,question:"What is the purpose of implementing hardware-based multi-factor authentication (e.g., FIDO2/WebAuthn security keys)?",options:["Hardware keys that only work with a single specific website","Physical security keys (YubiKey, Titan Key) that provide phishing-resistant authentication by cryptographically verifying both the user's possession of the key and the legitimacy of the website domain, defeating most credential phishing and MFA-bypass techniques","A backup authentication method used only when passwords are forgotten","A method that eliminates the need for any username entirely"],answer:1,explanation:"Unlike SMS or app-based OTP codes (which can be phished via real-time relay attacks or SIM swapping), FIDO2/WebAuthn hardware keys perform origin-bound cryptographic challenge-response authentication — even if a user is tricked into visiting a perfect phishing replica of a legitimate site, the security key won't authenticate because the cryptographic check inherently validates the actual domain, making this one of the strongest available defenses against phishing-based account takeover.",optionExplanations:["FIDO2/WebAuthn keys are designed to work across multiple compliant websites/services using public key cryptography, not limited to a single site.","FIDO2 hardware keys provide superior phishing resistance compared to other MFA methods specifically because the authentication is cryptographically bound to the legitimate domain, making real-time phishing relay attacks ineffective — a significant security advantage over OTP-based methods.","Hardware security keys are a primary, ongoing authentication factor for regular login use, not solely a password-recovery fallback mechanism.","Username/identity is still required alongside the hardware key as part of the multi-factor authentication process; the key proves possession, not identity by itself."]},
   {id:899,domain:O,question:"What is the purpose of conducting a 'purple team' continuous improvement cycle combining detection engineering with adversary emulation?",options:["A cycle that focuses solely on writing incident reports after the fact","An iterative process where red team/adversary emulation techniques (mapped to frameworks like MITRE ATT&CK) are used to test specific detection capabilities, with blue team immediately tuning and validating detections, continuously improving the SOC's ability to catch real-world adversary techniques", "A process used only once per year during annual security audits","A cycle that excludes any reference to real-world threat intelligence"],answer:1,explanation:"A mature purple team cycle might emulate a specific MITRE ATT&CK technique (e.g., T1003 - OS Credential Dumping), observe whether the SOC's detection stack catches it, and if not, immediately work with detection engineers to build and validate a new detection rule — then test again, creating a continuous feedback loop directly tied to real adversary tactics rather than abstract, generic detection rule development.",optionExplanations:["The cycle is centered on proactive testing and immediate detection improvement, not retrospective documentation after the fact.","This continuous, technique-by-technique improvement cycle, often mapped against MITRE ATT&CK, ensures detection engineering efforts are directly validated against realistic adversary behavior rather than developed in a vacuum, producing measurably more effective detections over time.","The value of this approach comes specifically from its continuous, iterative nature — frequent cycles (not just annual) allow for rapid, ongoing detection capability improvement as the threat landscape evolves.","Purple team exercises are specifically grounded in real-world threat intelligence and frameworks like MITRE ATT&CK to ensure tested techniques reflect actual observed adversary behavior, not theoretical or arbitrary scenarios."]},
   {id:900,domain:G,question:"What is the overarching goal of a comprehensive information security program, synthesizing confidentiality, integrity, availability, and risk management?",options:["Achieving a state of zero risk and zero possible security incidents","Reducing organizational risk to an acceptable level by implementing a balanced set of administrative, technical, and physical controls that protect the confidentiality, integrity, and availability of information assets while enabling the organization to achieve its business objectives", "Implementing the maximum possible number of security controls regardless of cost or business impact","Achieving compliance certifications as the sole and final objective"],answer:1,explanation:"Effective security programs recognize that absolute security is neither achievable nor desirable (it would paralyze business operations) — the goal is risk management: identifying assets and threats, implementing proportionate and balanced controls (administrative policies, technical safeguards, physical security), and continuously adapting as the threat landscape and business needs evolve, ultimately enabling rather than hindering the organization's mission.",optionExplanations:["Zero risk is an unrealistic and counterproductive goal — perfect security would require eliminating all functionality and connectivity; real security programs manage risk to acceptable levels instead.","This captures the holistic, business-aligned purpose of security — protecting the CIA triad through balanced, proportionate controls while still enabling the organization to function and pursue its objectives, rather than security existing as an isolated, obstructive goal.","Maximizing control implementation without regard to cost-effectiveness or business impact leads to security theater and business paralysis, not actual risk reduction.","Compliance certifications are typically a byproduct or validation of a good security program, not the program's ultimate purpose — compliance doesn't guarantee actual security, and treating it as the end goal can lead to checkbox-only security."]},
+
+  // ── Performance-Based Questions (PBQ) ─────────────────────────────
+  {id:901,type:"matching",domain:G,question:"Match each cryptographic algorithm to its correct type.",pairs:[
+    {term:"AES-256",match:"Symmetric Encryption"},
+    {term:"RSA-2048",match:"Asymmetric Encryption"},
+    {term:"SHA-256",match:"Hashing Algorithm"},
+    {term:"HMAC-SHA256",match:"Message Authentication Code"},
+  ],explanation:"AES is a symmetric block cipher using a shared key. RSA is asymmetric, using a public/private key pair. SHA-256 produces a fixed-length hash used for integrity checking. HMAC combines a hash function with a secret key to authenticate messages."},
+
+  {id:902,type:"matching",domain:G,question:"Match each network port to the service that uses it by default.",pairs:[
+    {term:"Port 22",match:"SSH"},
+    {term:"Port 443",match:"HTTPS"},
+    {term:"Port 389",match:"LDAP"},
+    {term:"Port 514",match:"Syslog"},
+  ],explanation:"Port 22 is SSH for secure remote shell access. Port 443 is HTTPS for encrypted web traffic. Port 389 is LDAP for directory services. Port 514 is the standard Syslog port for centralized log forwarding."},
+
+  {id:903,type:"matching",domain:T,question:"Match each attack type to its primary description.",pairs:[
+    {term:"Phishing",match:"Fraudulent email designed to steal credentials"},
+    {term:"SQL Injection",match:"Inserts malicious code into a database query"},
+    {term:"DDoS",match:"Floods a system to make it unavailable"},
+    {term:"Man-in-the-Middle",match:"Secretly intercepts communications between two parties"},
+  ],explanation:"Phishing uses deceptive emails to trick users. SQL injection exploits unsanitized input to manipulate databases. DDoS overwhelms resources to deny legitimate access. Man-in-the-Middle (on-path) attacks intercept and potentially alter traffic in transit."},
+
+  {id:904,type:"matching",domain:G,question:"Match each security control example to its correct control type.",pairs:[
+    {term:"Security Awareness Training",match:"Administrative"},
+    {term:"Intrusion Detection System",match:"Technical"},
+    {term:"Mantrap Entry",match:"Physical"},
+    {term:"Risk Assessment Policy",match:"Managerial"},
+  ],explanation:"Administrative controls include training and procedures governing people. Technical controls use hardware/software like IDS. Physical controls restrict physical access (mantraps, locks). Managerial controls govern risk through policies and governance frameworks."},
+
+  {id:905,type:"matching",domain:G,question:"Match each authentication example to its authentication factor type.",pairs:[
+    {term:"Password",match:"Something you know"},
+    {term:"Hardware Token",match:"Something you have"},
+    {term:"Iris Scan",match:"Something you are"},
+    {term:"GPS Location",match:"Somewhere you are"},
+  ],explanation:"Passwords and PINs are knowledge factors. Hardware tokens (smart cards, TOTP devices) are possession factors. Biometrics (iris, fingerprint) are inherence factors. Location-based authentication represents a fourth factor (somewhere you are)."},
+
+  {id:906,type:"matching",domain:A,question:"Match each cloud service model to its primary description.",pairs:[
+    {term:"IaaS",match:"Provides virtualized servers, storage, and networking"},
+    {term:"PaaS",match:"Provides a development platform and runtime environment"},
+    {term:"SaaS",match:"Delivers fully managed applications over the internet"},
+    {term:"SECaaS",match:"Delivers security services as a cloud subscription"},
+  ],explanation:"Infrastructure as a Service (IaaS) gives raw compute/storage. Platform as a Service (PaaS) adds a managed development environment. Software as a Service (SaaS) delivers complete applications. Security as a Service (SECaaS) provides cloud-delivered security functions such as SIEM or DLP."},
+
+  {id:907,type:"matching",domain:G,question:"Match each PKI component to its function.",pairs:[
+    {term:"Certificate Authority (CA)",match:"Issues and digitally signs certificates"},
+    {term:"Registration Authority (RA)",match:"Validates requester identity before certificate issuance"},
+    {term:"Certificate Revocation List (CRL)",match:"Lists certificates that are no longer trusted"},
+    {term:"OCSP",match:"Provides real-time certificate validity status"},
+  ],explanation:"The CA is the trusted root that signs certificates. The RA performs identity verification on behalf of the CA. The CRL is a published list of revoked certificate serial numbers. OCSP (Online Certificate Status Protocol) allows real-time validity checks, replacing periodic CRL downloads."},
+
+  {id:908,type:"matching",domain:A,question:"Match each wireless security standard to its key characteristic.",pairs:[
+    {term:"WEP",match:"Uses RC4 stream cipher; deprecated due to weak IVs"},
+    {term:"WPA2",match:"Uses AES-CCMP; most widely deployed standard"},
+    {term:"WPA3",match:"Uses SAE; resistant to offline dictionary attacks"},
+    {term:"802.1X",match:"Port-based network access control for enterprise authentication"},
+  ],explanation:"WEP is broken due to short IVs combined with RC4. WPA2 uses AES in Counter Mode (CCMP). WPA3 replaces PSK with Simultaneous Authentication of Equals (SAE), eliminating offline password attacks. 802.1X is an IEEE standard for port-based NAC using EAP and a RADIUS server."},
+
+  {id:909,type:"matching",domain:T,question:"Match each malware type to its defining behavior.",pairs:[
+    {term:"Ransomware",match:"Encrypts victim files and demands payment for decryption"},
+    {term:"Rootkit",match:"Conceals malicious activity by hooking OS kernel functions"},
+    {term:"Keylogger",match:"Records and exfiltrates keystrokes silently"},
+    {term:"Worm",match:"Self-replicates across networks without user interaction"},
+  ],explanation:"Ransomware encrypts files to extort victims. Rootkits hide malware by modifying OS internals. Keyloggers capture credentials and sensitive input. Worms spread autonomously by exploiting network vulnerabilities without requiring a host file or user action."},
+
+  {id:910,type:"matching",domain:P,question:"Match each compliance framework to its primary regulatory focus.",pairs:[
+    {term:"HIPAA",match:"U.S. healthcare patient data privacy and security"},
+    {term:"PCI DSS",match:"Payment card industry data security requirements"},
+    {term:"GDPR",match:"European Union personal data protection"},
+    {term:"SOX",match:"U.S. corporate financial reporting integrity"},
+  ],explanation:"HIPAA protects healthcare patient information in the U.S. PCI DSS sets security requirements for card payment systems. GDPR mandates data protection rights for EU residents. SOX (Sarbanes-Oxley) requires accurate financial reporting and internal controls for U.S. public companies."},
+
+  {id:911,type:"ordering",domain:O,question:"Arrange the NIST SP 800-61 incident response phases in the correct order, from first to last.",items:[
+    "Preparation",
+    "Detection & Analysis",
+    "Containment, Eradication & Recovery",
+    "Post-Incident Activity",
+  ],explanation:"NIST SP 800-61 defines four phases: (1) Preparation — establish capabilities before an incident; (2) Detection & Analysis — identify and understand the incident; (3) Containment, Eradication & Recovery — limit damage and restore systems; (4) Post-Incident Activity — document lessons learned and improve defenses."},
+
+  {id:912,type:"ordering",domain:O,question:"Arrange the digital forensics process steps in the correct order, from first to last.",items:[
+    "Identify",
+    "Preserve",
+    "Collect",
+    "Examine",
+    "Analyze",
+    "Present",
+  ],explanation:"Digital forensics follows: (1) Identify — find potential evidence sources; (2) Preserve — protect integrity using write blockers and hashing; (3) Collect — acquire evidence per legal guidelines; (4) Examine — process raw data; (5) Analyze — find patterns, timelines, and artifacts; (6) Present — deliver court-ready findings."},
+
+  {id:913,type:"ordering",domain:P,question:"Arrange the risk management lifecycle steps in the correct order, from first to last.",items:[
+    "Identify Risks",
+    "Assess Risks",
+    "Plan Risk Response",
+    "Implement Controls",
+    "Monitor & Review",
+  ],explanation:"Risk management follows: (1) Identify — catalog threats and vulnerabilities; (2) Assess — evaluate likelihood and impact; (3) Plan — choose to accept, avoid, transfer, or mitigate each risk; (4) Implement — put controls in place; (5) Monitor — continuously review control effectiveness and adapt."},
+
+  {id:914,type:"ordering",domain:O,question:"Arrange the vulnerability management lifecycle steps in the correct order, from first to last.",items:[
+    "Discover Assets",
+    "Scan for Vulnerabilities",
+    "Prioritize Findings",
+    "Remediate Vulnerabilities",
+    "Verify Remediation",
+  ],explanation:"Vulnerability management follows: (1) Discover — enumerate all assets in scope; (2) Scan — use tools like Nessus or Qualys; (3) Prioritize — rank by CVSS score and business context; (4) Remediate — patch, reconfigure, or apply compensating controls; (5) Verify — confirm vulnerabilities are closed and no regressions introduced."},
+
+  {id:915,type:"ordering",domain:G,question:"Arrange the PKI certificate enrollment steps in the correct order, from first to last.",items:[
+    "Generate Key Pair",
+    "Submit Certificate Signing Request (CSR)",
+    "CA Validates Requester Identity",
+    "CA Issues Signed Certificate",
+    "Install Certificate on System",
+  ],explanation:"PKI enrollment: (1) Generate a public/private key pair on the requester's system; (2) Create a CSR containing the public key and identity info; (3) The CA verifies the requester's identity via the RA or other means; (4) The CA signs the certificate and returns it; (5) The certificate is installed and bound to the private key on the target system."},
+
+  {id:916,type:"fillin",domain:G,question:"What is the default TCP port number used by SSH (Secure Shell)?",answer:"22",aliases:["port 22","tcp 22","tcp/22"],explanation:"SSH uses TCP port 22 by default for encrypted remote command-line access. It replaced Telnet (port 23) which transmitted credentials in plaintext. Port 22 is a common reconnaissance target and is often changed or restricted to reduce exposure."},
+
+  {id:917,type:"fillin",domain:G,question:"In the CIA security triad, what does the letter 'A' stand for?",answer:"availability",aliases:["Availability"],explanation:"The CIA triad stands for Confidentiality (protecting data from unauthorized disclosure), Integrity (ensuring data accuracy and trustworthiness), and Availability (ensuring systems and data are accessible to authorized users when needed). All three properties must be balanced in a security program."},
+
+  {id:918,type:"fillin",domain:T,question:"What type of malware disguises itself as legitimate or useful software to trick users into installing it?",answer:"trojan",aliases:["trojan horse","trojan malware","a trojan"],explanation:"A Trojan horse (Trojan) appears to be benign software but contains a malicious payload. Unlike viruses and worms, Trojans do not self-replicate — they rely on user action to execute. Common examples include fake utilities, games, or software cracks bundled with backdoors or spyware."},
+
+  {id:919,type:"fillin",domain:G,question:"What is the default port number used by DNS (Domain Name System) for standard queries?",answer:"53",aliases:["port 53","udp 53","tcp 53","udp/53","tcp/53"],explanation:"DNS uses port 53 for both UDP (standard queries) and TCP (zone transfers and responses exceeding 512 bytes). DNS over HTTPS (DoH) uses port 443 and DNS over TLS (DoT) uses port 853 for encrypted resolution."},
+
+  {id:920,type:"fillin",domain:G,question:"What is the term for the process of converting ciphertext back into its original plaintext using a key?",answer:"decryption",aliases:["decrypt","deciphering"],explanation:"Decryption reverses the encryption process, transforming ciphertext back to readable plaintext using the appropriate key. In symmetric encryption, the same key encrypts and decrypts. In asymmetric encryption, the private key decrypts what the public key encrypted (or vice versa for digital signatures)."},
 ];
