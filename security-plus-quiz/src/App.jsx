@@ -7,6 +7,7 @@ import StudyScreen from "./components/StudyScreen";
 import { questions, DOMAINS } from "./data/questions";
 
 const QUIZ_SIZE = 90;
+const PBQ_TARGET = 5;
 const SEEN_KEY = "spq_seen_v1";
 
 function shuffle(arr) {
@@ -67,7 +68,13 @@ export default function App() {
       didReset = true;
     }
 
-    const selected = shuffle(unseen).slice(0, Math.min(QUIZ_SIZE, unseen.length));
+    const size = Math.min(QUIZ_SIZE, unseen.length);
+    const pbqUnseen = unseen.filter((q) => q.type && q.type !== "mcq");
+    const mcqUnseen = unseen.filter((q) => !q.type || q.type === "mcq");
+    const pbqCount = Math.min(PBQ_TARGET, pbqUnseen.length, size);
+    const pbqPicked = shuffle(pbqUnseen).slice(0, pbqCount);
+    const mcqPicked = shuffle(mcqUnseen).slice(0, size - pbqPicked.length);
+    const selected = shuffle([...pbqPicked, ...mcqPicked]);
     setQuizQuestions(selected);
     setAnswers({});
     setSelectedDomain(domain);
